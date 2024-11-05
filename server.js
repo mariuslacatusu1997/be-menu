@@ -12,7 +12,7 @@ const PORT = 5000;
 const corsOptions = {
     origin: 'http://localhost:3000', // Replace this with the URL of your React app
     methods: 'GET,POST,PUT,DELETE,FETCH',
-    allowedHeaders: 'Content-Type',
+    allowedHeaders: 'Content-Type, Access-Control-Allow-Origin',
 };
 
 app.use(cors(corsOptions)); // Use the CORS middleware
