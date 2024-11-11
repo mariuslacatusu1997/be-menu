@@ -10,18 +10,14 @@ const PORT = 5000;
 
 // Configure CORS
 const corsOptions = {
-    origin: 'http://localhost:3000', // Replace this with the URL of your React app
+    origin: 'http://192.168.1.123:3000', // Replace this with the URL of your React app
     methods: 'GET,POST,PUT,DELETE,FETCH',
-    allowedHeaders: 'Content-Type, Access-Control-Allow-Origin',
+    allowedHeaders: 'Content-Type',
 };
 
 app.use(cors(corsOptions)); // Use the CORS middleware
 app.use(express.json());
-app.all('/*', function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    next();
-  });
+
 const categoriesFilePath = path.join(__dirname, '../backend/src/categories.xlsx');
 const productsFilePath = path.join(__dirname, '../backend/src/products.xlsx');
 
@@ -44,10 +40,16 @@ app.get('/initialize', (req, res) => {
 
 // Endpoint to get categories
 app.get('/categories', (req, res) => {
+    const { tv } = req.query;
     const workbook = XLSX.readFile(categoriesFilePath);
     const sheetName = workbook.SheetNames[0];
-    const categoriesData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-    res.json(categoriesData);
+    let categoriesData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+    if (tv == 1 || tv == 2) {
+        categoriesData = categoriesData.filter(item => {
+            return item.tv == tv
+        });  
+    }
+    return res.json(categoriesData);
 });
 
 // Endpoint to add a new category
