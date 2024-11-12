@@ -10,7 +10,7 @@ const PORT = 5000;
 
 // Configure CORS
 const corsOptions = {
-    origin: 'http://192.168.1.123:3000', // Replace this with the URL of your React app
+    origin: 'http://localhost:3000', // Replace this with the URL of your React app
     methods: 'GET,POST,PUT,DELETE,FETCH',
     allowedHeaders: 'Content-Type',
 };
@@ -101,7 +101,7 @@ app.get('/products/category/:id', (req, res) => {
 // Update Category
 app.put('/categories/:id', (req, res) => {
     const { id } = req.params;
-    const { name } = req.body;
+    const { name, order, hidden, tv } = req.body;
     const workbook = XLSX.readFile(categoriesFilePath);
     const sheetName = workbook.SheetNames[0];
     const categories = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
@@ -109,6 +109,12 @@ app.put('/categories/:id', (req, res) => {
     const categoryIndex = categories.findIndex(cat => cat.id == id);
     if (categoryIndex >= 0) {
         categories[categoryIndex].name = name; // Update the category name
+        categories[categoryIndex].order = +order; // Update the category name
+        categories[categoryIndex].hidden = `${hidden}`; // Update the category name
+        categories[categoryIndex].tv = tv; // Update the category name
+
+
+
         const newSheet = XLSX.utils.json_to_sheet(categories);
         workbook.Sheets[sheetName] = newSheet;
         XLSX.writeFile(workbook, categoriesFilePath);
@@ -162,7 +168,7 @@ app.get('/products', (req, res) => {
 // Endpoint to update a product
 app.put('/products/:id', (req, res) => {
     const { id } = req.params;
-    const { name, price, category_id } = req.body;
+    const { name, price, category_id, order, soldout,hidden, discount } = req.body;
 
     const products = readProductsFromExcel(); // Read current products
     const productIndex = products.findIndex(prod => prod.id === parseInt(id));
@@ -170,6 +176,10 @@ app.put('/products/:id', (req, res) => {
     if (productIndex > -1) {
         // Update the product details
         products[productIndex] = { id: parseInt(id), name, price, category_id };
+        products[productIndex].order = order;
+        products[productIndex].soldout = soldout;
+        products[productIndex].hidden = hidden;
+        products[productIndex].discount = discount;
         writeProductsToExcel(products); // Write updated products back to the Excel file
         return res.json(products[productIndex]); // Return the updated product
     } else {
