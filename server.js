@@ -101,7 +101,7 @@ app.get('/products/category/:id', (req, res) => {
 // Update Category
 app.put('/categories/:id', (req, res) => {
     const { id } = req.params;
-    const { name, order, hidden, tv } = req.body;
+    const { name, order, hidden, tv, parent_id } = req.body;
     const workbook = XLSX.readFile(categoriesFilePath);
     const sheetName = workbook.SheetNames[0];
     const categories = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
@@ -112,7 +112,7 @@ app.put('/categories/:id', (req, res) => {
         categories[categoryIndex].order = +order; // Update the category name
         categories[categoryIndex].hidden = `${hidden}`; // Update the category name
         categories[categoryIndex].tv = tv; // Update the category name
-
+        categories[categoryIndex].parent_id = parent_id;
 
 
         const newSheet = XLSX.utils.json_to_sheet(categories);
